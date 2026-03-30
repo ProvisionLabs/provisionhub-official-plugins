@@ -1,0 +1,36 @@
+{
+   "id": "auth.keycloak-go",
+   "creator": "Joao Paulo Gomes Rodrigues",
+   "contact": "joao.rodrigues@provisionlabs.dev",
+   "type": "auth",
+   "language": "go",
+   "title": "Keycloak IdP for ProvisionHub",
+   "description": "Keycloak plugin for authentication",
+   "loadMode": "persistent",
+   "runtime": {
+      "start": {
+         "command": "go",
+         "args": ["run", "./plugins/auth/keycloak-go/cmd/plugin"]
+      },
+      "transport": {
+         "protocol": "grpc",
+         "address": "127.0.0.1:50051",
+         "insecure": true,
+         "timeoutMs": 2500
+      }
+   },
+   "behavior": {
+      "restartPolicy": "on-failure",
+      "maxRestarts": 5,
+      "healthProbe": {
+         "rpc": "Health",
+         "intervalMs": 10000,
+         "timeoutMs": 1500
+      }
+   },
+   "version": "0.1.0",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/provisionlabs/official-plugins/keycloak-go"
+   }
+}
