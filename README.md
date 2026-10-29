@@ -1,67 +1,114 @@
 # ProvisionHub official plugins
 
-Official plugins for the local-first [ProvisionHub](https://github.com/ProvisionLabs/provisionhub)
-developer provisioning tool.
+Declarative local generators for [ProvisionHub](https://github.com/ProvisionLabs/provisionhub).
+The `plugins/` directory is supplied to the existing plugin loader; no plugin
+code is executed and ProvisionHub does not need recompilation when templates
+change.
 
-| Plugin | Status |
-| --- | --- |
-| [NestJS](plugins/nestjs/README.md) | Declarative backend generator, plugin contract `v1alpha1` |
-| `keycloak-go/` | Existing experimental gRPC authentication plugin; not a declarative generator |
+| Plugin | Technology | Version | Output |
+| --- | --- | --- | --- |
+| [NestJS](plugins/nestjs/README.md) | NestJS 12.3.2, TypeScript 6.0.3 | 1.0.0 | `backend/` |
+| [Next.js](plugins/nextjs/README.md) | Next.js 16.4.3, React 19.3.1, Tailwind CSS 4.3.3 | 1.0.0 | `frontend/` |
+| `keycloak-go/` | Experimental gRPC authentication plugin | — | Not a declarative generator |
 
-## Generate a NestJS backend
+## Generate a project
 
-Build or install ProvisionHub from the sibling repository. The examples below
-assume `provisionhub` is on your PATH and you run from this repository's root.
-Use an absolute plugin directory if running from elsewhere.
+Build or install ProvisionHub from the sibling repository. These commands
+assume `provisionhub` is on `PATH` and run from this repository root. Supply an
+absolute `--plugins` path when running elsewhere.
 
 ```sh
-provisionhub project init --name sample-api --path ../sample-api --backend nestjs
-provisionhub project plan --file ../sample-api/provisionhub.yaml --plugins ./plugins
-provisionhub project apply --file ../sample-api/provisionhub.yaml --plugins ./plugins
+provisionhub project init --name sample-web --path ../sample-web --backend nestjs --frontend nextjs
+provisionhub project plan --file ../sample-web/provisionhub.yaml --plugins ./plugins
+provisionhub project apply --file ../sample-web/provisionhub.yaml --plugins ./plugins
 ```
 
-Review the plan and type `yes` at the interactive prompt. For automation,
-`--yes` explicitly approves generation after reviewing the plan. Files appear
-under `../sample-api/backend/`. Generation never installs dependencies or runs
-commands. Then, using Node.js 24.15 or newer and npm:
+The equivalent manifest is:
+
+```yaml
+apiVersion: provisionhub.dev/v1alpha1
+kind: Project
+metadata:
+  name: sample-web
+spec:
+  backend:
+    technology: nestjs
+  frontend:
+    technology: nextjs
+```
+
+Review the plan before typing `yes` to apply. For noninteractive automation,
+`--yes` is explicit approval. Planning is read only. Apply creates declared
+files and refuses overwrites; it does not install dependencies or run commands.
+The current manifest requires a backend, so a frontend-only manifest is invalid.
+
+```text
+sample-web/
+├── provisionhub.yaml
+├── backend/
+│   ├── package.json
+│   └── src/
+└── frontend/
+    ├── package.json
+    ├── tsconfig.json
+    ├── next.config.ts
+    ├── postcss.config.mjs
+    ├── eslint.config.mjs
+    ├── .gitignore
+    ├── README.md
+    └── src/app/
+        ├── layout.tsx
+        ├── page.tsx
+        └── globals.css
+```
+
+Install and run each application separately. Both require npm; NestJS requires
+Node.js 24.15+, which also meets Next.js's Node.js 20.9+ minimum.
 
 ```sh
-cd ../sample-api/backend
+cd ../sample-web/frontend
 npm install
+npm run dev
 npm run build
 npm run start
 ```
 
-GET <http://127.0.0.1:3000/> returns `Hello from sample-api!`.
-For the TUI, set `PROVISIONHUB_PLUGINS` to this repository's absolute `plugins`
-directory before launching ProvisionHub. Select NestJS with no frontend or
-database, save, press `p` to preview, `g` to generate, and `y` to confirm.
+From `../sample-web/backend`, run `npm install`, `npm run build`, and
+`npm run start`. Each app defaults to port 3000, so set a different `PORT`
+when running them concurrently. There is no API connection between them.
 
-## Integration validation
+For the TUI, set `PROVISIONHUB_PLUGINS` to this repository's absolute
+`plugins` directory. A portable ProvisionHub executable also discovers an
+adjacent `plugins` directory when this variable is unset. Select NestJS and
+Next.js, save, press `p` to preview generation, `g` to open confirmation, and
+`y` to apply. `n` or Esc cancels.
 
-Requires Node.js 24.15+, npm, network access to the npm registry, and an already
-built ProvisionHub executable. No npm packages are needed in this repository.
-The test generates exclusively in a fresh system temporary directory and
-removes it afterward. It installs generated dependencies only as an explicit
-integration step, builds the app, starts the compiled entry point, and checks
-the HTTP response. It also checks deterministic plans, approval refusal,
-conflicts, traversal, linked output parents where supported, and unsupported
-frontend selections.
+## Validation
 
-PowerShell, from this repository:
+Build ProvisionHub first with `go build -o <absolute-executable> ./cmd/provisionhub`.
+The plugin repository needs no installed packages. The integration tests use
+temporary destinations, call the real CLI, and only then explicitly run npm in
+the generated applications. They need npm registry access. On PowerShell:
 
 ```powershell
 $env:PROVISIONHUB_BIN = (Resolve-Path ../provisionhub/provisionhub.exe).Path
-node --test tests/nestjs.test.mjs
+node --test tests/nestjs.test.mjs tests/nextjs.test.mjs
 ```
 
-Linux/macOS:
+On Linux or macOS:
 
 ```sh
-PROVISIONHUB_BIN="$(cd ../provisionhub && pwd)/provisionhub" node --test tests/nestjs.test.mjs
+PROVISIONHUB_BIN="$(cd ../provisionhub && pwd)/provisionhub" node --test tests/nestjs.test.mjs tests/nextjs.test.mjs
 ```
 
-Build the executable first with `go build ./cmd/provisionhub` from the core
-repository. Its Go requirement is defined in that repository's `go.mod`.
-See [NestJS validation results](plugins/nestjs/VALIDATION.md) for the checks
-performed for this version.
+The tests verify discovery, deterministic plans, approval refusal, naming,
+output paths, conflict and traversal rejection, builds, and HTTP responses.
+No network access is needed by the core Go test suite.
+
+## Limits
+
+Direct npm versions are pinned; generated projects receive a lockfile only
+after `npm install`. Commit that lockfile for repeatable installs. No database,
+authentication, Docker, cloud deployment, backend/frontend integration, or
+remote plugin installation is generated. The executor's multi-file publication
+is not transactional if a process crashes or the filesystem changes concurrently.

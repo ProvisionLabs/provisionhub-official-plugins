@@ -1,0 +1,39 @@
+apiVersion: provisionhub.dev/plugin/v1alpha1
+id: official-nextjs
+version: 1.0.0
+technologyId: nextjs
+category: frontend
+name: Next.js
+description: Minimal Next.js App Router frontend with TypeScript and Tailwind CSS
+capability: generate_frontend
+files:
+  - type: template
+    source: templates/package.json.tmpl
+    destination: frontend/package.json
+  - type: copy
+    source: templates/tsconfig.json
+    destination: frontend/tsconfig.json
+  - type: copy
+    source: templates/next.config.ts
+    destination: frontend/next.config.ts
+  - type: copy
+    source: templates/postcss.config.mjs
+    destination: frontend/postcss.config.mjs
+  - type: copy
+    source: templates/eslint.config.mjs
+    destination: frontend/eslint.config.mjs
+  - type: copy
+    source: templates/gitignore
+    destination: frontend/.gitignore
+  - type: template
+    source: templates/README.md.tmpl
+    destination: frontend/README.md
+  - type: template
+    source: templates/src/app/layout.tsx.tmpl
+    destination: frontend/src/app/layout.tsx
+  - type: template
+    source: templates/src/app/page.tsx.tmpl
+    destination: frontend/src/app/page.tsx
+  - type: copy
+    source: templates/src/app/globals.css
+    destination: frontend/src/app/globals.css

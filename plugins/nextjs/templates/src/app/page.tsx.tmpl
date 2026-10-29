@@ -1,0 +1,20 @@
+export default function Home() {
+  return (
+    <main className="flex min-h-screen items-center bg-slate-50 px-6 py-16 text-slate-900 sm:px-10">
+      <div className="mx-auto w-full max-w-3xl">
+        <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">
+          ProvisionHub starter
+        </p>
+        <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
+          {{projectName}}
+        </h1>
+        <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+          Welcome to your new Next.js application. Edit <code className="rounded bg-slate-200 px-1.5 py-0.5 text-base">src/app/page.tsx</code> to make it yours.
+        </p>
+        <div className="mt-10 border-t border-slate-200 pt-6 text-sm text-slate-500">
+          Built with Next.js, React, TypeScript, and Tailwind CSS.
+        </div>
+      </div>
+    </main>
+  );
+}
