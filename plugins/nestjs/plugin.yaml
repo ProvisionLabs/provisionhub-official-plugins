@@ -1,0 +1,39 @@
+apiVersion: provisionhub.dev/plugin/v1alpha1
+id: official-nestjs
+version: 1.0.0
+technologyId: nestjs
+category: backend
+name: NestJS
+description: Minimal NestJS HTTP backend with TypeScript
+capability: generate_backend
+files:
+  - type: template
+    source: templates/package.json.tmpl
+    destination: backend/package.json
+  - type: copy
+    source: templates/tsconfig.json
+    destination: backend/tsconfig.json
+  - type: copy
+    source: templates/tsconfig.build.json
+    destination: backend/tsconfig.build.json
+  - type: copy
+    source: templates/nest-cli.json
+    destination: backend/nest-cli.json
+  - type: copy
+    source: templates/gitignore
+    destination: backend/.gitignore
+  - type: template
+    source: templates/README.md.tmpl
+    destination: backend/README.md
+  - type: copy
+    source: templates/src/main.ts
+    destination: backend/src/main.ts
+  - type: copy
+    source: templates/src/app.module.ts
+    destination: backend/src/app.module.ts
+  - type: copy
+    source: templates/src/app.controller.ts
+    destination: backend/src/app.controller.ts
+  - type: template
+    source: templates/src/app.service.ts.tmpl
+    destination: backend/src/app.service.ts
