@@ -104,7 +104,7 @@ test('official NestJS discovery, approval, safe generation, build and HTTP endpo
   }
 
   const mixed = path.join(base, 'mixed');
-  run(['project', 'init', '--name', 'mixed', '--path', mixed, '--backend', 'nestjs', '--frontend', 'nextjs']);
+  run(['project', 'init', '--name', 'mixed', '--path', mixed, '--backend', 'nestjs', '--frontend', 'react']);
   const mixedFile = path.join(mixed, 'provisionhub.yaml');
   const mixedPlan = JSON.parse(run(['project', 'plan', '--file', mixedFile, '--plugins', pluginDirectory, '--output', 'json']).stdout);
   assert.equal(mixedPlan.executable, false, 'unsupported frontend must prevent execution');

@@ -28,8 +28,9 @@ dependencies are resolved during installation. Commit the application's npm
 lockfile after installation and use `npm ci` for subsequent repeatable installs.
 Pinned direct versions alone do not freeze transitive dependency resolution.
 
-Only NestJS backend generation is supported. Adding a frontend or database
-without its own generator leaves the complete plan non-executable. Existing
+NestJS and Next.js can be generated together when both official plugins are
+available. Adding a technology without its own generator leaves the complete
+plan non-executable. Existing
 files are never overwritten; choose a fresh destination to generate again.
 No dependency installation, shell commands, authentication, database setup,
 Docker, cloud provisioning, or plugin installation occurs during generation.
