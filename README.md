@@ -80,8 +80,11 @@ when running them concurrently. There is no API connection between them.
 For the TUI, set `PROVISIONHUB_PLUGINS` to this repository's absolute
 `plugins` directory. A portable ProvisionHub executable also discovers an
 adjacent `plugins` directory when this variable is unset. Select NestJS and
-Next.js, save, press `p` to preview generation, `g` to open confirmation, and
-`y` to apply. `n` or Esc cancels.
+Next.js. On Review, `p` optionally previews the read-only plan; Enter returns
+to Review. The **Generate Project** action then creates the manifest and both
+applications with one Enter. If a selected technology has no generator, Review
+shows **Save Manifest Only** instead. If generation fails after the manifest is
+saved, the result screen offers `p` to review and `g` then `y` to retry.
 
 ## Validation
 
