@@ -1,6 +1,6 @@
 apiVersion: provisionhub.dev/plugin/v1alpha1
 id: official-nestjs
-version: 1.0.0
+version: 1.1.0
 technologyId: nestjs
 category: backend
 name: NestJS
