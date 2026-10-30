@@ -118,9 +118,9 @@ when running them concurrently. There is no API connection between them.
 
 For the TUI, set `PROVISIONHUB_PLUGINS` to this repository's absolute
 `plugins` directory. A portable ProvisionHub executable also discovers an
-adjacent `plugins` directory when this variable is unset. Press F2 on the
-project-information screen to choose named components, then add, edit, or
-remove them before Review. On Review, `p` optionally previews the read-only plan; Enter returns
+adjacent `plugins` directory when this variable is unset. Create Project opens
+the named-component list directly after project information. Add, edit, or
+remove components before Review. On Review, `p` optionally previews the read-only plan; Enter returns
 to Review. The **Generate Project** action then creates the manifest and both
 applications with one Enter. If a selected technology has no generator, Review
 shows **Save Manifest Only** instead. If generation fails after the manifest is
