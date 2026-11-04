@@ -5,6 +5,10 @@ The `plugins/` directory is supplied to the existing plugin loader; no plugin
 code is executed and ProvisionHub does not need recompilation when templates
 change.
 
+Official packages use a [static registry](registry.json), deterministic archives,
+and a manually dispatched release workflow. See [distribution](docs/distribution.md)
+for package validation, immutable release tags, checksums, and publishing steps.
+
 | Plugin | Technology | Version | Output |
 | --- | --- | --- | --- |
 | [NestJS](plugins/nestjs/README.md) | NestJS 12.3.2, TypeScript 6.0.3 | 1.1.0 | `<component-name>/` (`backend/` for legacy manifests) |

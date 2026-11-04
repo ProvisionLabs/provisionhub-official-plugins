@@ -1,0 +1,74 @@
+name: Declarative plugin distribution
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing registry release tag, for example official-nestjs-v1.1.0'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: ProvisionLabs/provisionhub
+          ref: 5b958b3339bd9e7cea08163c8af6fce5e385bb4f
+          path: .core
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: .core/go.mod
+          cache-dependency-path: .core/go.sum
+      - name: Validate manifests, declared inputs and package security
+        working-directory: .core
+        run: go test ./internal/plugins ./internal/registry
+      - name: Build deterministic packages and validate registry
+        run: |
+          cd .core
+          go run ./cmd/pluginpack ../plugins ../dist
+          go run ./cmd/pluginpack ../plugins ../dist-repeat
+          cd ..
+          diff -r dist dist-repeat
+          cmp registry.json dist/registry.json
+          node scripts/check-registry.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-plugin-packages
+          path: dist/
+  publish:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          name: official-plugin-packages
+          path: dist
+      - name: Publish a new release without replacing an existing tag or artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/check-registry.mjs "$RELEASE_TAG"
+          if git ls-remote --exit-code --tags origin "refs/tags/$RELEASE_TAG"; then
+            echo 'Refusing to replace an existing tag'; exit 1
+          fi
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Refusing to replace an existing release'; exit 1
+          fi
+          gh release create "$RELEASE_TAG" "dist/$RELEASE_TAG.tar.gz" "dist/$RELEASE_TAG.tar.gz.sha256" --target "$GITHUB_SHA" --title "$RELEASE_TAG" --notes 'Declarative generator package. Verify SHA-256 against registry.json before installation.'
