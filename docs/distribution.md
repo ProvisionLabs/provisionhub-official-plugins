@@ -11,7 +11,7 @@ From a sibling core checkout, build into a new output directory:
 
 ```sh
 cd ../provisionhub
-GOTOOLCHAIN=go1.26.1 go run ./cmd/pluginpack ../provisionhub-official-plugins/plugins ../provisionhub-official-plugins/dist
+GOTOOLCHAIN=go1.26.1 go run ./cmd/pluginpack ../provisionhub-official-plugins/plugins ../provisionhub-official-plugins/dist ../provisionhub-official-plugins/registry.json
 ```
 
 The tool validates manifests and every declared input, then writes deterministic
@@ -35,6 +35,14 @@ The index itself can evolve on main; release artifacts must stay immutable.
 Retain historical version entries when adding releases. No branch archive is
 used as an immutable package. No GitHub login is needed to read the public index
 or public release assets.
+
+When intentionally adding a version, build once without the optional previous
+index, merge the new version into registry.json while retaining prior entries,
+then build with the previous-index argument. The tool refuses changing a known
+release's checksum, URL, compatibility or package identity. Historical versions
+remain downloadable from their original releases, not rebuilt from current
+templates. CI additionally installs both current plugins into temporary storage,
+restarts offline, generates four named components and checks removal isolation.
 
 Checksums detect byte changes, not publisher identity. Trust relies on HTTPS,
 the official repository, release owners, and local file security. There are no
