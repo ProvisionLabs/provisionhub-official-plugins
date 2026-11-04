@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "plugins": [
+    {
+      "id": "official/nestjs",
+      "manifestId": "official-nestjs",
+      "publisher": "ProvisionLabs",
+      "name": "NestJS",
+      "description": "Minimal NestJS HTTP backend with TypeScript",
+      "technologyId": "nestjs",
+      "category": "backend",
+      "source": "https://github.com/ProvisionLabs/provisionhub-official-plugins",
+      "versions": [
+        {
+          "version": "1.1.0",
+          "minimumCoreVersion": "0.1.0",
+          "artifact": "https://github.com/ProvisionLabs/provisionhub-official-plugins/releases/download/official-nestjs-v1.1.0/official-nestjs-v1.1.0.tar.gz",
+          "sha256": "65008b9fe29bcf3e851c919cd72b825d62403d20c68452fd1ce24d77dbd35dca"
+        }
+      ]
+    },
+    {
+      "id": "official/nextjs",
+      "manifestId": "official-nextjs",
+      "publisher": "ProvisionLabs",
+      "name": "Next.js",
+      "description": "Minimal Next.js App Router frontend with TypeScript and Tailwind CSS",
+      "technologyId": "nextjs",
+      "category": "frontend",
+      "source": "https://github.com/ProvisionLabs/provisionhub-official-plugins",
+      "versions": [
+        {
+          "version": "1.1.0",
+          "minimumCoreVersion": "0.1.0",
+          "artifact": "https://github.com/ProvisionLabs/provisionhub-official-plugins/releases/download/official-nextjs-v1.1.0/official-nextjs-v1.1.0.tar.gz",
+          "sha256": "49a9222753af6244ab77e8dad5ef0187e5db89ff97091e2006bfd57f00ece4f1"
+        }
+      ]
+    }
+  ]
+}

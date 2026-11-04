@@ -1,0 +1,4 @@
+plugins/** text eol=lf
+registry.json text eol=lf
+*.mjs text eol=lf
+*.yml text eol=lf
