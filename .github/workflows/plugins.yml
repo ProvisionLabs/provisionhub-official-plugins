@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ProvisionLabs/provisionhub
-          ref: 5b958b3339bd9e7cea08163c8af6fce5e385bb4f
+          ref: 5a990c72dff2ba4a3f67b2e4327ba3c70b3f52d5
           path: .core
       - uses: actions/setup-go@v7
         with:
@@ -35,12 +35,17 @@ jobs:
       - name: Build deterministic packages and validate registry
         run: |
           cd .core
-          go run ./cmd/pluginpack ../plugins ../dist
-          go run ./cmd/pluginpack ../plugins ../dist-repeat
+          go run ./cmd/pluginpack ../plugins ../dist ../registry.json
+          go run ./cmd/pluginpack ../plugins ../dist-repeat ../registry.json
           cd ..
           diff -r dist dist-repeat
           cmp registry.json dist/registry.json
           node scripts/check-registry.mjs
+      - name: Install official packages, restart offline and generate named components
+        working-directory: .core
+        env:
+          PROVISIONHUB_OFFICIAL_PLUGINS: ${{ github.workspace }}/plugins
+        run: go test -count=1 -run TestOfficialPackageLifecycle ./internal/application
       - uses: actions/upload-artifact@v4
         with:
           name: official-plugin-packages
