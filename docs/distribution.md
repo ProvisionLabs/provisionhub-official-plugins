@@ -28,8 +28,11 @@ metadata. To release, a maintainer manually dispatches the workflow on main with
 an exact registry tag such as `official-nestjs-v1.1.0`. The workflow requires
 contents-write permission and refuses existing tags/releases. It uploads a
 versioned tar.gz and checksum through GitHub Releases. Never delete, retag or
-replace a published artifact. No release has been published merely by adding
-the index: until dispatch succeeds, listed download URLs may return 404.
+replace a published artifact. Adding an index entry alone does not publish its
+asset: until dispatch succeeds, a new download URL may return 404. Both official
+1.1.0 package workflows have now completed successfully and public installation
+was validated. Future releases require the same validated manual dispatch and
+repository contents-write permission; no external publishing server is needed.
 
 The index itself can evolve on main; release artifacts must stay immutable.
 Retain historical version entries when adding releases. No branch archive is

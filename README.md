@@ -9,6 +9,21 @@ Official packages use a [static registry](registry.json), deterministic archives
 and a manually dispatched release workflow. See [distribution](docs/distribution.md)
 for package validation, immutable release tags, checksums, and publishing steps.
 
+With the Plugin Registry v1 core, install the published official packages:
+
+```sh
+provisionhub plugin search
+provisionhub plugin install official/nestjs@1.1.0
+provisionhub plugin install official/nextjs@1.1.0
+provisionhub plugin list
+```
+
+Home → **Plugins** offers Available, Installed and Updates. Installed packages
+persist in application data and require no registry connection for generation.
+The explicit local `--plugins ./plugins` workflow below remains supported. See
+the core [Plugin Manager guide](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-registry.md)
+for update, removal, version selection, security and offline behavior.
+
 | Plugin | Technology | Version | Output |
 | --- | --- | --- | --- |
 | [NestJS](plugins/nestjs/README.md) | NestJS 12.3.2, TypeScript 6.0.3 | 1.1.0 | `<component-name>/` (`backend/` for legacy manifests) |
