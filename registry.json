@@ -15,7 +15,7 @@
           "version": "1.1.0",
           "minimumCoreVersion": "0.1.0",
           "artifact": "https://github.com/ProvisionLabs/provisionhub-official-plugins/releases/download/official-nestjs-v1.1.0/official-nestjs-v1.1.0.tar.gz",
-          "sha256": "65008b9fe29bcf3e851c919cd72b825d62403d20c68452fd1ce24d77dbd35dca"
+          "sha256": "da66a4ec8b709bcc0020c33c613e52ca8b5f038320e9d256d041e0c6a18d718d"
         }
       ]
     },
@@ -33,7 +33,7 @@
           "version": "1.1.0",
           "minimumCoreVersion": "0.1.0",
           "artifact": "https://github.com/ProvisionLabs/provisionhub-official-plugins/releases/download/official-nextjs-v1.1.0/official-nextjs-v1.1.0.tar.gz",
-          "sha256": "49a9222753af6244ab77e8dad5ef0187e5db89ff97091e2006bfd57f00ece4f1"
+          "sha256": "ae3b602131405c586865307353bbeef2ba061c7ec2f0a1ba0d2698b655ab715d"
         }
       ]
     }

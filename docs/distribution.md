@@ -11,13 +11,15 @@ From a sibling core checkout, build into a new output directory:
 
 ```sh
 cd ../provisionhub
-go run ./cmd/pluginpack ../provisionhub-official-plugins/plugins ../provisionhub-official-plugins/dist
+GOTOOLCHAIN=go1.26.1 go run ./cmd/pluginpack ../provisionhub-official-plugins/plugins ../provisionhub-official-plugins/dist
 ```
 
 The tool validates manifests and every declared input, then writes deterministic
 USTAR gzip packages, SHA-256 sidecars, and an index. Only `plugin.yaml` and declared
 source files are included. Files are ordered, modes and timestamps fixed, and
-LF checkouts enforced by `.gitattributes`. Packages are OS independent data;
+LF checkouts enforced by `.gitattributes`. Use the pinned Go 1.26.1 release
+toolchain: gzip encoders can change between Go versions. On PowerShell, set
+`$env:GOTOOLCHAIN = 'go1.26.1'` before running the tool. Packages are OS independent data;
 installation executes no scripts, generators, npm or downloaded binaries.
 
 The distribution workflow checks generated registry metadata against this
