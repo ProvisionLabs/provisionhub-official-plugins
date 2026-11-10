@@ -1,9 +1,9 @@
 # Official NestJS plugin
 
-`official-nestjs` source version `1.2.0` (unreleased) implements ProvisionHub's
+`official-nestjs` source version `1.3.0` (unreleased) implements ProvisionHub's
 `provisionhub.dev/plugin/v1alpha1` contract for the built-in backend technology
 `nestjs`. It is discovered from `--plugins <this-repository>/plugins` without
-recompiling ProvisionHub. It requires core compatibility 0.2.0 and adds optional
+recompiling ProvisionHub. It requires core compatibility 0.3.0 and adds optional
 declarative configuration; no executable hooks exist. Published 1.1.0 remains
 unchanged in the registry.
 
@@ -56,3 +56,15 @@ Docker, cloud provisioning, or plugin installation occurs during generation.
 See the [repository usage and test commands](../../README.md),
 [validation results](VALIDATION.md), and the core
 [plugin contract](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/architecture/plugins.md).
+
+The `http-api` provider slot exposes capability type `http`, literal protocol
+`http`, and port metadata bound to this instance's resolved `port` configuration.
+Another NestJS instance can expose a different port. Consumers select component
+names, not the first plugin/technology match. This adds no backend files or
+framework behavior when no connection is declared.
+
+The consumer must explicitly choose a hostname/IP reachable from its own
+server. NestJS still binds to loopback by default; `HOST` and `PORT` environment
+overrides affect the running server. Update consumer API_ORIGIN when those or
+deployment addresses change. No public browser address, CORS, TLS, proxy, or
+container network is inferred. See [connections](../../docs/connections.md).

@@ -1,67 +1,60 @@
 # Official plugins development context
 
-Checked November 10, 2026. Repository manifests, registry and CI remain the source
-of truth. Declarative NestJS and Next.js source versions are both 1.2.0 (unreleased); published packages remain 1.1.0. Distribution IDs
-are `official/nestjs` and `official/nextjs`; manifest IDs remain `official-nestjs`
-and `official-nextjs`, and technology IDs remain `nestjs` and `nextjs`.
+Checked November 10, 2026. Manifests, registry, tests, and CI are authoritative.
+Source versions are 1.3.0 (unreleased), requiring core compatibility 0.3.0.
+Distribution IDs remain official/nestjs and official/nextjs; YAML and technology
+IDs are unchanged. Only immutable 1.1.0 packages were published/registered during
+investigation. The earlier 1.2.0 sources were not available through official
+managed discovery. No release publication is authorized by this milestone.
 
-Plugin Registry v1 is implemented jointly with the core. `registry.json` is public
-static metadata. Packages contain the existing manifest and declared source files
-only; no runtime plugin process or script is introduced. The experimental
-`keycloak-go` gRPC module is excluded from declarative distribution.
+Both generators retain declarative scalar component configuration. NestJS has
+greeting and port; Next.js has welcomeMessage and showCredits. Defaults and
+framework dependency versions remain unchanged. Unconnected generation still
+produces the same ten files per component.
 
-Both packages have been published under versioned GitHub Release tags
-`official-nestjs-v1.1.0` and `official-nextjs-v1.1.0`. The manually dispatched
-workflow ran validation before publishing; neither tag nor artifact was replaced.
-Use [distribution](distribution.md) for the pinned Go 1.26.1 packaging process,
-checksum validation, historical release retention and future release steps.
+The Component Connection Engine adds plugin-defined capabilities. NestJS
+provides http-api/type http with port bound to resolved instance configuration
+and literal protocol http. Next.js consumes compatible metadata through its
+server-api slot. Its required serverHost is explicit and validated as DNS/IP;
+no universal localhost/container host is assumed. A connection generates private
+API_ORIGIN in .env.local and .env.example. Multiple frontends can share a
+backend or choose distinct named instances. No framework pairing logic is in Go.
 
-CI checks manifests/inputs, reproducible package bytes, index consistency,
-SHA-256 sidecars and published release immutability. It pins a validated core
-revision and tests installing both current definitions over mock HTTPS,
-restarting offline, generating four named components and removing one package
-without losing the other. No GitHub credentials are needed by tests.
+The core reuses scalar validation/defaults, literal escaping, deterministic
+planning, approval freshness, and existing safe execution. Integration inputs
+are packaged and integrity-checked even when no connection is selected. Slots
+have one target; duplicate/ambiguous/unsupported declarations, invalid options,
+and generation cycles are rejected. There is no general conditional template
+language, arbitrary plugin execution, HTTP client, extra page, CORS/proxy setup,
+container discovery, project persistence, or deployment orchestration.
 
-Live Windows validation also fetched the public index and both public assets
-without application authentication, verified managed health, generated 40 files
-with registry access blocked, checked same-version update behavior, removed
-packages and verified continued local discovery. A newer compatible version is
-covered by mocked core tests; no second official release exists. Node/npm integration tests have been migrated to the current one-time CLI; see the configuration validation notes below.
+API_ORIGIN belongs to Next.js server code. Build/static rendering can consume
+environment too; dynamic execution is needed for runtime reads. Browser
+addresses/NEXT_PUBLIC build-time embedding are separate choices. Generation
+does not establish networking. Later HOST/PORT/deployment changes require
+updating application configuration. See [connections](connections.md).
 
-The core stores files and SQLite installation metadata in application data,
-supports CLI/TUI management and explicit session versions, and retains local
-directories/environment overrides. Updates preserve prior installations and
-ambiguity requires selection; project state remains in memory and project locks are retired.
-Community publishing, extra registry configuration and marketplace services are
-outside this milestone. Future sources can reuse the core registry interface.
+CI pins a compatible core and validates packages, retained public registry
+history, checksums, offline CLI generation, and managed offline lifecycle
+natively on Windows/Linux/macOS. Artifacts are separated by OS; any future
+authorized publication uses the Linux package artifact. The public registry
+and existing release assets are unchanged. The keycloak-go experiment remains
+excluded from declarative packages. See [distribution](distribution.md).
 
+Local validation passed offline CLI tests for unchanged base files, 44-file
+connected projects, shared/distinct targets, deterministic plans/files,
+approval, safety, required host validation, and blocked persistence. The managed
+lifecycle passed local HTTPS installation, offline restart, instance-specific
+ports, integration-template tamper detection, removal isolation, and zero
+saved-project registrations. Core tests require no live network or credentials.
 
-The Declarative Project Configuration Engine is implemented in core compatibility
-0.2.0. Source plugins add optional `configuration.properties`: NestJS has
-`greeting` (Hello, string length 1?120) and `port` (3000, integer 1?65535);
-Next.js has `welcomeMessage` (existing starter message, string length 1?240)
-and `showCredits` (true, boolean). Each changes generated source; no dependency
-versions or package manager options were added. Templates use escaped JSON
-literals for strings and validated boolean/integer literals. Defaults preserve
-runtime behavior. No conditional generation or executable plugin hooks exist.
+The separate runtime test passed on Windows for two fresh projects: eight real
+npm installations/builds and four Next.js lints, followed by real Next.js-to-
+NestJS HTTP requests for shared and distinct targets. Eleven tests passed.
+Dynamic probe routes exist only in temporary fixtures, not plugin output.
+Servers stop before cleanup. Native offline CI does not imply runtime validation
+on Linux/macOS. Commands and assumptions are in [the connection guide](connections.md).
 
-CLI settings are per named component (`--set api.port=4001`); TUI fields, labels,
-descriptions and defaults come from the same schema and resolver. Planning
-resolves configuration and renders in memory, exposing values and rendered
-hashes in a deterministic review plan. Apply requires approval and checks fresh
-inputs. No project YAML, plugin lockfile, or saved-project registration is written.
-
-Local validation generated two NestJS and two Next.js applications with distinct
-settings, checked deterministic output and isolation, approval, conflicts,
-symlinks, unsafe paths, and blocked persistence. All four generated applications
-completed real npm installations and builds on Windows. Core managed package
-lifecycle tests also installed the configured packages, restarted offline, and
-verified isolated configured files and removal. Unit tests need no live network.
-Default NestJS and Next.js HTTP checks and Next.js lint also passed after correcting Windows test cleanup ordering. Runtime checks are separate from CI's offline generation checks.
-
-The public registry is unchanged until a separate 1.2.0 release; older cores
-continue to receive 1.1.0. Use local discovery for source configuration examples.
-See [distribution](distribution.md), [usage](../README.md), and the core
-[configuration contract](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-configuration.md).
-Next work: publish the compatible plugin packages, then design the Component
-Connection Engine separately from this milestone.
+Recommended next milestone: plugin contract conformance and release validation.
+Publishing the compatible source packages requires separate explicit authorization;
+database/authentication/deployment integration remains outside this milestone.
