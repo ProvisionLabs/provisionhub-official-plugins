@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ProvisionLabs/provisionhub
-          ref: 5a990c72dff2ba4a3f67b2e4327ba3c70b3f52d5
+          ref: 2b34eaab744127f47bc150f2826aaf1f88394443
           path: .core
       - uses: actions/setup-go@v7
         with:
@@ -39,8 +39,13 @@ jobs:
           go run ./cmd/pluginpack ../plugins ../dist-repeat ../registry.json
           cd ..
           diff -r dist dist-repeat
-          cmp registry.json dist/registry.json
           node scripts/check-registry.mjs
+      - name: Validate configured CLI generation without npm or network
+        run: |
+          cd .core
+          go build -o provisionhub ./cmd/provisionhub
+          cd ..
+          PROVISIONHUB_BIN="$GITHUB_WORKSPACE/.core/provisionhub" node --test tests/configuration.test.mjs
       - name: Install official packages, restart offline and generate named components
         working-directory: .core
         env:

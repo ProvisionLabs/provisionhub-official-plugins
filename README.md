@@ -1,176 +1,108 @@
 # ProvisionHub official plugins
 
-Declarative local generators for [ProvisionHub](https://github.com/ProvisionLabs/provisionhub).
-The `plugins/` directory is supplied to the existing plugin loader; no plugin
-code is executed and ProvisionHub does not need recompilation when templates
-change.
+Declarative generators for [ProvisionHub](https://github.com/ProvisionLabs/provisionhub).
+Plugins contain YAML and source templates. Generation executes no plugin scripts,
+installs no dependencies, and creates no ProvisionHub project metadata.
 
-Official packages use a [static registry](registry.json), deterministic archives,
-and a manually dispatched release workflow. See [distribution](docs/distribution.md)
-for package validation, immutable release tags, checksums, and publishing steps.
+| Source plugin | Version | Configurable options |
+| --- | --- | --- |
+| [NestJS](plugins/nestjs/README.md) | 1.2.0 (unreleased) | Greeting prefix and default HTTP port |
+| [Next.js](plugins/nextjs/README.md) | 1.2.0 (unreleased) | Welcome message and technology credits |
 
-With the Plugin Registry v1 core, install the published official packages:
+Configured source plugins require core compatibility 0.2.0. The public
+[registry](registry.json) continues to advertise the immutable, published 1.1.0
+packages, which have no configuration fields. Those still work with the new
+core. Use `--plugins ./plugins` for the new source versions. Publishing 1.2.0
+and adding its registry entries is a separate release step; see
+[distribution](docs/distribution.md). The experimental `keycloak-go/` module is
+excluded from declarative distribution.
 
-```sh
-provisionhub plugin search
-provisionhub plugin install official/nestjs@1.1.0
-provisionhub plugin install official/nextjs@1.1.0
-provisionhub plugin list
-```
+## Generate and configure
 
-Home → **Plugins** offers Available, Installed and Updates. Installed packages
-persist in application data and require no registry connection for generation.
-The explicit local `--plugins ./plugins` workflow below remains supported. See
-the core [Plugin Manager guide](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-registry.md)
-for update, removal, version selection, security and offline behavior.
-
-| Plugin | Technology | Version | Output |
-| --- | --- | --- | --- |
-| [NestJS](plugins/nestjs/README.md) | NestJS 12.3.2, TypeScript 6.0.3 | 1.1.0 | `<component-name>/` (`backend/` for legacy manifests) |
-| [Next.js](plugins/nextjs/README.md) | Next.js 16.4.3, React 19.3.1, Tailwind CSS 4.3.3 | 1.1.0 | `<component-name>/` (`frontend/` for legacy manifests) |
-| `keycloak-go/` | Experimental gRPC authentication plugin | — | Not a declarative generator |
-
-## Generate a project
-
-Build or install ProvisionHub from the sibling repository. These commands
-assume `provisionhub` is on `PATH` and run from this repository root. Supply an
-absolute `--plugins` path when running elsewhere.
+Build ProvisionHub from the sibling repository. From this repository, preview:
 
 ```sh
-provisionhub project init --name sample-web --path ../sample-web --backend nestjs --frontend nextjs
-provisionhub project plan --file ../sample-web/provisionhub.yaml --plugins ./plugins
-provisionhub project apply --file ../sample-web/provisionhub.yaml --plugins ./plugins
+provisionhub project plan --name commerce --path ../commerce --plugins ./plugins --component api:backend:nestjs --component billing:backend:nestjs --component web:frontend:nextjs --component admin:frontend:nextjs --set api.greeting=Welcome --set api.port=4001 --set admin.welcomeMessage=Administration --set admin.showCredits=false
 ```
 
-The equivalent manifest is:
+Repeat the flags with `project apply` to review and approve generation. An
+interactive terminal requires literal `yes`; `--yes` gives explicit approval in
+automation. `project plan --output json` includes resolved configuration for
+each component. Generation creates `api/`, `billing/`, `web/`, and `admin/` as
+ordinary applications. It writes no project YAML, plugin lock, SQLite project
+registration, or application package lockfile. Existing files are never overwritten.
 
-```yaml
-apiVersion: provisionhub.dev/v1alpha1
-kind: Project
-metadata:
-  name: sample-web
-spec:
-  backend:
-    technology: nestjs
-  frontend:
-    technology: nextjs
-```
+Settings belong to the named component. In this example `billing` retains
+`Hello` and port `3000`, while `web` retains its original welcome and credits.
+Defaults preserve existing behavior when no `--set` flags are supplied.
+Booleans are exactly `true`/`false`; integers are signed decimal values; strings
+are literal text. Quote a whole `--set 'api.greeting=Good morning'` value when
+it contains spaces. Unknown keys/components, duplicate settings, incompatible
+types, and constraint violations are errors. No framework settings are in Go.
 
-Review the plan before typing `yes` to apply. For noninteractive automation,
-`--yes` is explicit approval. Planning is read only. Apply creates declared
-files and refuses overwrites; it does not install dependencies or run commands.
-The legacy manifest requires a backend. A named-component manifest requires at
-least one component and can contain multiple instances of the same technology.
+In the Bubble Tea TUI, set `PROVISIONHUB_PLUGINS` to the absolute `plugins`
+directory, then choose Create Project. Add a component, choose category and
+technology, enter its name, and configure the dynamic fields. Labels,
+descriptions, and defaults come from the plugin. Left/Right/Space selects a
+boolean or enum; text inputs collect strings and integers. Enter advances and
+saves the last field; Esc returns to the name with the draft intact. Editing a
+component restores its settings. Review shows configuration summaries; `p`
+opens the full read-only plan, and Enter on Review approves generation.
 
-For a multi-component project, save this manifest as `source.yaml`, then run:
+Install the published packages with `plugin install official/nestjs@1.1.0`
+and `plugin install official/nextjs@1.1.0`. They persist in application data and
+generate offline. Home → Plugins provides managed installation, removal, and
+explicit version selection. See the core [Plugin Manager guide](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-registry.md).
 
-```sh
-provisionhub project init --from ./source.yaml --path ../multi-service-demo
-provisionhub project plan --file ../multi-service-demo/provisionhub.yaml --plugins ./plugins
-provisionhub project apply --file ../multi-service-demo/provisionhub.yaml --plugins ./plugins
-```
+## Plugin authoring and planning
 
-```yaml
-apiVersion: provisionhub.dev/v1alpha1
-kind: Project
-metadata:
-  name: multi-service-demo
-spec:
-  components:
-    - name: api
-      type: backend
-      technology: nestjs
-    - name: billing
-      type: backend
-      technology: nestjs
-    - name: web
-      type: frontend
-      technology: nextjs
-    - name: admin
-      type: frontend
-      technology: nextjs
-  connections:
-    - from: web
-      to: api
-      type: http
-```
+The optional flat `configuration.properties` mapping supports string, boolean,
+integer, and string enum fields, defaults, required values, labels, descriptions,
+string lengths, and integer ranges. Each configured option in these examples
+changes generated source. The core rejects malformed schemas and does not
+silently coerce incompatible values. It resolves defaults and validates template
+references before contributing generation operations. Planning renders bytes in
+memory for validation and hashing without filesystem writes or command execution.
 
-This generates `api/`, `billing/`, `web/`, and `admin/` beside the manifest.
-The connection is declaration only; no HTTP client or network configuration is
-generated. Each package and starter page uses its component name. Reordering
-the component list does not change plan identities or output paths.
-
-```text
-sample-web/
-├── provisionhub.yaml
-├── backend/
-│   ├── package.json
-│   └── src/
-└── frontend/
-    ├── package.json
-    ├── tsconfig.json
-    ├── next.config.ts
-    ├── postcss.config.mjs
-    ├── eslint.config.mjs
-    ├── .gitignore
-    ├── README.md
-    └── src/app/
-        ├── layout.tsx
-        ├── page.tsx
-        └── globals.css
-```
-
-Install and run each application separately. Both require npm; NestJS requires
-Node.js 24.15+, which also meets Next.js's Node.js 20.9+ minimum.
-
-```sh
-cd ../sample-web/frontend
-npm install
-npm run dev
-npm run build
-npm run start
-```
-
-From `../sample-web/backend`, run `npm install`, `npm run build`, and
-`npm run start`. Each app defaults to port 3000, so set a different `PORT`
-when running them concurrently. There is no API connection between them.
-
-For the TUI, set `PROVISIONHUB_PLUGINS` to this repository's absolute
-`plugins` directory. A portable ProvisionHub executable also discovers an
-adjacent `plugins` directory when this variable is unset. Create Project opens
-the named-component list directly after project information. Add, edit, or
-remove components before Review. On Review, `p` optionally previews the read-only plan; Enter returns
-to Review. The **Generate Project** action then creates the manifest and both
-applications with one Enter. If a selected technology has no generator, Review
-shows **Save Manifest Only** instead. If generation fails after the manifest is
-saved, the result screen offers `p` to review and `g` then `y` to retry.
+Templates retain `{{projectName}}` and `{{componentName}}`, with
+`{{component.name}}` also available. Configuration strings use complete JSON
+literals (`{{config.greeting|json}}`) or HTML text escaping
+(`{{config.title|html}}`). Boolean and integer references such as
+`{{config.showCredits}}` and `{{config.port}}` produce literals. Missing or
+unsupported references fail; there are no arbitrary expressions or scripts.
+See the authoritative [configuration schema and authoring guide](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-configuration.md)
+and [plugin manifest specification](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/architecture/plugins.md).
 
 ## Validation
 
-Build ProvisionHub first with `go build -o <absolute-executable> ./cmd/provisionhub`.
-The plugin repository needs no installed packages. The integration tests use
-temporary destinations, call the real CLI, and only then explicitly run npm in
-the generated applications. They need npm registry access. On PowerShell:
+Build the sibling core with `go build -o <absolute-executable> ./cmd/provisionhub`.
+The offline generation tests need only that executable and Node:
 
 ```powershell
 $env:PROVISIONHUB_BIN = (Resolve-Path ../provisionhub/provisionhub.exe).Path
-node --test tests/nestjs.test.mjs tests/nextjs.test.mjs tests/components.test.mjs
+node --test tests/configuration.test.mjs
 ```
 
-On Linux or macOS:
+On Linux/macOS, set `PROVISIONHUB_BIN` to the absolute executable path using
+your shell. Tests use temporary directories and local plugins. They verify
+four configured components, deterministic plans/files, defaults, isolation,
+typed errors, approval, no metadata/persistence, no-overwrite, symlinks, and
+path safety. CI also tests reproducible packages and managed offline generation
+using a pinned compatible core. No npm registry access is required by these checks.
+
+Explicit runtime checks install dependencies, build all four applications,
+lint Next.js, and check default HTTP responses. They require compatible Node/npm
+and npm registry access:
 
 ```sh
-PROVISIONHUB_BIN="$(cd ../provisionhub && pwd)/provisionhub" node --test tests/nestjs.test.mjs tests/nextjs.test.mjs tests/components.test.mjs
+node --test --test-concurrency=1 tests/nestjs.test.mjs tests/nextjs.test.mjs tests/components.test.mjs
 ```
 
-The tests verify discovery, deterministic plans, approval refusal, naming,
-output paths, conflict and traversal rejection, four-component builds, and HTTP responses.
-No network access is needed by the core Go test suite.
-
-## Limits
-
-Direct npm versions are pinned; generated projects receive a lockfile only
-after `npm install`. Commit that lockfile for repeatable installs. No database,
-authentication, Docker, cloud deployment, backend/frontend integration, or
-remote plugin installation is generated. The executor's multi-file publication
-is not transactional if a process crashes or the filesystem changes concurrently.
+NestJS needs Node 24.15+, which also meets the existing Next.js requirement.
+Run `npm install`, `npm run build`, and `npm run start` in each generated
+component when ready. Assign distinct ports for concurrent applications.
+ProvisionHub never runs these commands. npm creates application lockfiles during
+installation; commit those for repeatable installs. Framework dependencies are
+unchanged by this milestone. Authentication, database wiring, connections,
+deployment, package manager selection, and conditional file generation remain
+outside these examples.

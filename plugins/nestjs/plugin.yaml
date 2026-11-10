@@ -1,11 +1,27 @@
 apiVersion: provisionhub.dev/plugin/v1alpha1
 id: official-nestjs
-version: 1.1.0
+version: 1.2.0
 technologyId: nestjs
 category: backend
 name: NestJS
 description: Minimal NestJS HTTP backend with TypeScript
 capability: generate_backend
+configuration:
+  properties:
+    greeting:
+      type: string
+      label: Greeting prefix
+      description: Text returned before the component name by GET /.
+      default: Hello
+      minLength: 1
+      maxLength: 120
+    port:
+      type: integer
+      label: Default HTTP port
+      description: Listening port when the PORT environment variable is unset.
+      default: 3000
+      minimum: 1
+      maximum: 65535
 files:
   - type: template
     source: templates/package.json.tmpl
@@ -25,7 +41,7 @@ files:
   - type: template
     source: templates/README.md.tmpl
     destination: backend/README.md
-  - type: copy
+  - type: template
     source: templates/src/main.ts
     destination: backend/src/main.ts
   - type: copy
