@@ -1,11 +1,25 @@
 apiVersion: provisionhub.dev/plugin/v1alpha1
 id: official-nextjs
-version: 1.1.0
+version: 1.2.0
 technologyId: nextjs
 category: frontend
 name: Next.js
 description: Minimal Next.js App Router frontend with TypeScript and Tailwind CSS
 capability: generate_frontend
+configuration:
+  properties:
+    welcomeMessage:
+      type: string
+      label: Welcome message
+      description: Introductory text on the starter home page.
+      default: Welcome to your new Next.js application.
+      minLength: 1
+      maxLength: 240
+    showCredits:
+      type: boolean
+      label: Show technology credits
+      description: Display the technology credit footer on the home page.
+      default: true
 files:
   - type: template
     source: templates/package.json.tmpl
