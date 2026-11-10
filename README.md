@@ -6,13 +6,13 @@ installs no dependencies, and creates no ProvisionHub project metadata.
 
 | Source plugin | Version | Configurable options |
 | --- | --- | --- |
-| [NestJS](plugins/nestjs/README.md) | 1.2.0 (unreleased) | Greeting prefix and default HTTP port |
-| [Next.js](plugins/nextjs/README.md) | 1.2.0 (unreleased) | Welcome message and technology credits |
+| [NestJS](plugins/nestjs/README.md) | 1.3.0 (unreleased) | Greeting prefix and default HTTP port |
+| [Next.js](plugins/nextjs/README.md) | 1.3.0 (unreleased) | Welcome message and technology credits |
 
-Configured source plugins require core compatibility 0.2.0. The public
+Configured source plugins require core compatibility 0.3.0. The public
 [registry](registry.json) continues to advertise the immutable, published 1.1.0
 packages, which have no configuration fields. Those still work with the new
-core. Use `--plugins ./plugins` for the new source versions. Publishing 1.2.0
+core. Use `--plugins ./plugins` for the new source versions. Publishing 1.3.0
 and adding its registry entries is a separate release step; see
 [distribution](docs/distribution.md). The experimental `keycloak-go/` module is
 excluded from declarative distribution.
@@ -54,6 +54,26 @@ and `plugin install official/nextjs@1.1.0`. They persist in application data and
 generate offline. Home → Plugins provides managed installation, removal, and
 explicit version selection. See the core [Plugin Manager guide](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-registry.md).
 
+## Component connections
+
+Optional HTTP connections configure the selected backend endpoint for Next.js
+server code. NestJS exposes resolved port/protocol metadata; Next.js consumes
+that capability and generates private `API_ORIGIN` in `.env.local` and
+`.env.example`. The connection requires an explicit `serverHost`, because a
+server-side address is not automatically browser-accessible. For example:
+
+```sh
+provisionhub project plan --name example --path ../example --plugins ./plugins --component api:backend:nestjs --component web:frontend:nextjs --component admin:frontend:nextjs --set api.port=4101 --connect web:api:http --connect admin:api:http --connection-set web:api:http.serverHost=127.0.0.1 --connection-set admin:api:http.serverHost=127.0.0.1
+```
+
+This explicitly assumes both Next.js servers can reach the same-host backend.
+Repeat the flags with `project apply` after review. From Components in the TUI,
+`c` opens connection add/edit/remove and compatible target selection. Projects
+without connections keep their existing output. See the [connection guide and
+runtime demonstration](docs/connections.md) for distinct targets, host validation,
+build/runtime differences, and a real HTTP test. No client, extra page, CORS,
+proxy, container discovery, or deployment setup is generated.
+
 ## Plugin authoring and planning
 
 The optional flat `configuration.properties` mapping supports string, boolean,
@@ -80,7 +100,7 @@ The offline generation tests need only that executable and Node:
 
 ```powershell
 $env:PROVISIONHUB_BIN = (Resolve-Path ../provisionhub/provisionhub.exe).Path
-node --test tests/configuration.test.mjs
+node --test tests/configuration.test.mjs tests/connections.test.mjs
 ```
 
 On Linux/macOS, set `PROVISIONHUB_BIN` to the absolute executable path using
@@ -95,7 +115,7 @@ lint Next.js, and check default HTTP responses. They require compatible Node/npm
 and npm registry access:
 
 ```sh
-node --test --test-concurrency=1 tests/nestjs.test.mjs tests/nextjs.test.mjs tests/components.test.mjs
+node --test --test-concurrency=1 tests/nestjs.test.mjs tests/nextjs.test.mjs tests/components.test.mjs tests/connections-runtime.test.mjs
 ```
 
 NestJS needs Node 24.15+, which also meets the existing Next.js requirement.
@@ -103,6 +123,7 @@ Run `npm install`, `npm run build`, and `npm run start` in each generated
 component when ready. Assign distinct ports for concurrent applications.
 ProvisionHub never runs these commands. npm creates application lockfiles during
 installation; commit those for repeatable installs. Framework dependencies are
-unchanged by this milestone. Authentication, database wiring, connections,
-deployment, package manager selection, and conditional file generation remain
-outside these examples.
+unchanged by this milestone. Authentication, database wiring, deployment,
+package manager selection, and general conditional file generation remain
+outside these examples. Connection-owned file sets are the bounded extension;
+runtime networking remains the application's responsibility.

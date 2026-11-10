@@ -1,11 +1,11 @@
 # Official Next.js plugin
 
-`official-nextjs` source version `1.2.0` (unreleased) uses ProvisionHub's
+`official-nextjs` source version `1.3.0` (unreleased) uses ProvisionHub's
 `provisionhub.dev/plugin/v1alpha1` contract for the built-in frontend ID
 `nextjs`. Its `generate_frontend` capability declares ten files under
 `frontend/`. ProvisionHub discovers it from this repository's `plugins`
-directory without recompilation. Configuration requires core compatibility
-0.2.0. Published 1.1.0 remains unchanged in the registry.
+directory without recompilation. Configuration and connections require core compatibility
+0.3.0. Published 1.1.0 remains unchanged in the registry.
 
 | Key | Type | Default | Effect |
 | --- | --- | --- | --- |
@@ -47,3 +47,19 @@ and backend/frontend integration are outside this plugin.
 
 See [repository usage and validation](../../README.md) and the core
 [plugin contract](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/architecture/plugins.md).
+
+The optional `server-api` consumer slot accepts capability type `http` with
+protocol `http` and a validated integer port. It requires a connection-specific
+`serverHost` (DNS hostname or IPv4/IPv6, without scheme/port/path/credentials).
+For example, `--connect web:api:http --connection-set web:api:http.serverHost=127.0.0.1`
+selects the named backend `api`. Its resolved component port determines the
+endpoint. Each frontend can select a different target or share one provider.
+
+A valid connection creates `.env.local` and `.env.example` containing private
+`API_ORIGIN`, for `process.env.API_ORIGIN` in Next.js server code. Existing
+environment values take precedence; restart after changing environment files.
+Build-time/static rendering can consume environment too, so use dynamic server
+execution when runtime reads are needed. No `NEXT_PUBLIC_*` value is inferred
+or added. Browser addresses and cross-origin policy require separate choices.
+No HTTP client or extra page is shipped. Without a connection, the original
+ten-file output is unchanged. See [the runtime demonstration](../../docs/connections.md).

@@ -1,6 +1,6 @@
 apiVersion: provisionhub.dev/plugin/v1alpha1
 id: official-nextjs
-version: 1.2.0
+version: 1.3.0
 technologyId: nextjs
 category: frontend
 name: Next.js
@@ -20,6 +20,38 @@ configuration:
       label: Show technology credits
       description: Display the technology credit footer on the home page.
       default: true
+connections:
+  consumes:
+    - id: server-api
+      type: http
+      description: Configure a server-side API origin for this frontend.
+      requires:
+        properties:
+          port:
+            type: integer
+            required: true
+            minimum: 1
+            maximum: 65535
+          protocol:
+            type: enum
+            options: [http]
+            required: true
+      configuration:
+        properties:
+          serverHost:
+            type: string
+            format: host
+            label: Backend host reachable from the Next.js server
+            description: DNS hostname or IP only. No scheme, port, credentials, or path. Loopback works only on the same host.
+            required: true
+            maxLength: 253
+      files:
+        - type: template
+          source: templates/connections/http.env.tmpl
+          destination: frontend/.env.local
+        - type: template
+          source: templates/connections/http.env.tmpl
+          destination: frontend/.env.example
 files:
   - type: template
     source: templates/package.json.tmpl

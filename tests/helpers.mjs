@@ -18,9 +18,10 @@ export function cli(args, success = true, env = {}) {
   return result;
 }
 
-export function flags(destination, components, settings = []) {
+export function flags(destination, components, settings = [], connections = [], connectionSettings = []) {
   return ['--name', 'demo', '--path', destination, '--plugins', plugins,
-    ...components.flatMap(c => ['--component', c]), ...settings.flatMap(s => ['--set', s])];
+    ...components.flatMap(c => ['--component', c]), ...settings.flatMap(s => ['--set', s]),
+    ...connections.flatMap(c => ['--connect', c]), ...connectionSettings.flatMap(s => ['--connection-set', s])];
 }
 
 export async function snapshot(directory) {
