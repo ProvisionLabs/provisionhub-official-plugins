@@ -1,6 +1,6 @@
 apiVersion: provisionhub.dev/plugin/v1alpha1
 id: official-nestjs
-version: 1.2.0
+version: 1.3.0
 technologyId: nestjs
 category: backend
 name: NestJS
@@ -22,6 +22,16 @@ configuration:
       default: 3000
       minimum: 1
       maximum: 65535
+connections:
+  provides:
+    - id: http-api
+      type: http
+      description: Plain HTTP endpoint served by this component.
+      metadata:
+        port:
+          configuration: port
+        protocol:
+          value: http
 files:
   - type: template
     source: templates/package.json.tmpl
