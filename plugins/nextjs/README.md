@@ -1,10 +1,24 @@
 # Official Next.js plugin
 
-`official-nextjs` version `1.1.0` uses ProvisionHub's existing
+`official-nextjs` source version `1.2.0` (unreleased) uses ProvisionHub's
 `provisionhub.dev/plugin/v1alpha1` contract for the built-in frontend ID
 `nextjs`. Its `generate_frontend` capability declares ten files under
 `frontend/`. ProvisionHub discovers it from this repository's `plugins`
-directory without recompilation.
+directory without recompilation. Configuration requires core compatibility
+0.2.0. Published 1.1.0 remains unchanged in the registry.
+
+| Key | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `welcomeMessage` | string, 1–240 Unicode characters | `Welcome to your new Next.js application.` | Introductory text on the home page |
+| `showCredits` | boolean | `true` | Controls visibility of the technology credit footer |
+
+For example, add `--set admin.welcomeMessage=Administration --set admin.showCredits=false`
+for a component named `admin`. Each repeated Next.js component has independent
+values. The message renders as a JSON string literal inside a JSX expression;
+credits render as a boolean expression in the generated application. Defaults
+retain the current starter page behavior. The TUI gets labels/descriptions and
+defaults from the schema. No new runtime dependencies are introduced. See the
+[configuration contract](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-configuration.md).
 
 The generated application uses Next.js `16.4.3`, React `19.3.1`, TypeScript
 `6.0.3`, Tailwind CSS `4.3.3`, and ESLint `10.13.0`. It includes a strict
@@ -26,8 +40,8 @@ transitive dependencies. Commit the generated lockfile and use `npm ci` for
 repeatable installs. ProvisionHub itself never installs packages or runs
 application commands.
 
-Legacy manifests require a backend. New manifests can declare one or more named
-components of any supported category. Existing destination
+The in-memory project specification can contain one or more named components
+of supported categories. No project YAML or saved registration is created. Existing destination
 files are never overwritten. Authentication, database connections, deployment,
 and backend/frontend integration are outside this plugin.
 

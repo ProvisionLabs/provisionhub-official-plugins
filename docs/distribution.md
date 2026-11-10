@@ -5,7 +5,7 @@ from ProvisionHub's `internal/registry`. Package identity is `official/nestjs` o
 `official/nextjs`; the existing YAML IDs `official-nestjs` and `official-nextjs`
 remain unchanged. Technology IDs are separate. Stable semantic plugin versions
 are independent of framework versions. `minimumCoreVersion` is the inclusive
-lower bound for the core's compatibility version (currently 0.1.0).
+lower bound for the core's compatibility version (currently 0.2.0).
 
 From a sibling core checkout, build into a new output directory:
 
@@ -53,3 +53,20 @@ signatures, community publishing, trust scores or marketplace backend in v1.
 The core supports local templates independently of this registry and remains
 usable offline after installation. Project-specific version locking is future
 work; installed versions must never be chosen arbitrarily when ambiguous.
+
+## Configured source packages
+
+The 1.2.0 source definitions add declarative configuration and require core
+compatibility 0.2.0. They are unreleased: `registry.json` continues to contain
+only the published immutable 1.1.0 assets. CI packages the current source into
+`dist/`, retains published history in the candidate `dist/registry.json`, and
+checks that every public entry is unchanged. Repeated package builds must be
+byte-identical. A pinned 0.2.0-capable core validates configured managed offline
+generation and real CLI generation without npm or network access.
+
+Use the local plugins directory for 1.2.0 before release. To publish later,
+review and promote the candidate registry entries with their exact checksums
+and `minimumCoreVersion: 0.2.0`, then dispatch publication for each new tag.
+The publication check deliberately requires the tag to exist in the public
+index and its validated package to be present. No release/tag or historical
+asset is changed as part of the configuration milestone.

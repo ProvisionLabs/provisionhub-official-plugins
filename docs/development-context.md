@@ -1,7 +1,7 @@
 # Official plugins development context
 
-Checked November 3, 2026. Repository manifests, registry and CI remain the source
-of truth. Declarative NestJS and Next.js versions are both 1.1.0. Distribution IDs
+Checked November 10, 2026. Repository manifests, registry and CI remain the source
+of truth. Declarative NestJS and Next.js source versions are both 1.2.0 (unreleased); published packages remain 1.1.0. Distribution IDs
 are `official/nestjs` and `official/nextjs`; manifest IDs remain `official-nestjs`
 and `official-nextjs`, and technology IDs remain `nestjs` and `nextjs`.
 
@@ -26,13 +26,42 @@ Live Windows validation also fetched the public index and both public assets
 without application authentication, verified managed health, generated 40 files
 with registry access blocked, checked same-version update behavior, removed
 packages and verified continued local discovery. A newer compatible version is
-covered by mocked core tests; no second official release exists. The previous
-Node/npm generator tests remain available and unchanged; they were not rerun as
-part of this distribution milestone, and no new Node runtime validation is claimed.
+covered by mocked core tests; no second official release exists. Node/npm integration tests have been migrated to the current one-time CLI; see the configuration validation notes below.
 
 The core stores files and SQLite installation metadata in application data,
 supports CLI/TUI management and explicit session versions, and retains local
 directories/environment overrides. Updates preserve prior installations and
-ambiguity requires selection; portable project plugin locks are recommended next.
+ambiguity requires selection; project state remains in memory and project locks are retired.
 Community publishing, extra registry configuration and marketplace services are
 outside this milestone. Future sources can reuse the core registry interface.
+
+
+The Declarative Project Configuration Engine is implemented in core compatibility
+0.2.0. Source plugins add optional `configuration.properties`: NestJS has
+`greeting` (Hello, string length 1?120) and `port` (3000, integer 1?65535);
+Next.js has `welcomeMessage` (existing starter message, string length 1?240)
+and `showCredits` (true, boolean). Each changes generated source; no dependency
+versions or package manager options were added. Templates use escaped JSON
+literals for strings and validated boolean/integer literals. Defaults preserve
+runtime behavior. No conditional generation or executable plugin hooks exist.
+
+CLI settings are per named component (`--set api.port=4001`); TUI fields, labels,
+descriptions and defaults come from the same schema and resolver. Planning
+resolves configuration and renders in memory, exposing values and rendered
+hashes in a deterministic review plan. Apply requires approval and checks fresh
+inputs. No project YAML, plugin lockfile, or saved-project registration is written.
+
+Local validation generated two NestJS and two Next.js applications with distinct
+settings, checked deterministic output and isolation, approval, conflicts,
+symlinks, unsafe paths, and blocked persistence. All four generated applications
+completed real npm installations and builds on Windows. Core managed package
+lifecycle tests also installed the configured packages, restarted offline, and
+verified isolated configured files and removal. Unit tests need no live network.
+Default NestJS and Next.js HTTP checks and Next.js lint also passed after correcting Windows test cleanup ordering. Runtime checks are separate from CI's offline generation checks.
+
+The public registry is unchanged until a separate 1.2.0 release; older cores
+continue to receive 1.1.0. Use local discovery for source configuration examples.
+See [distribution](distribution.md), [usage](../README.md), and the core
+[configuration contract](https://github.com/ProvisionLabs/provisionhub/blob/main/docs/plugin-configuration.md).
+Next work: publish the compatible plugin packages, then design the Component
+Connection Engine separately from this milestone.
